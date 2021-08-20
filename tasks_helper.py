@@ -31,7 +31,7 @@ class Task:
 
     def __str__(self):
         self.age = date.today() - self.created
-        print_version = str(self.id) + "\t" + str(self.age.days) + " days \t" + str(self.due) + "\t\t" + str(self.priority) + "\t\t" + str(self.name)
+        print_version = str(self.id).ljust(4, " ") + str(self.age.days) + " days".ljust(8," ") + str(self.due).ljust(15, " ") + str(self.priority).ljust(10," ") + str(self.name)
 
         return print_version
 
@@ -59,17 +59,19 @@ class Tasks:
 
     def list(self):
         """Print tasks in columns."""
-        print("ID\tAge\tDue Date\tPriority\tTask")
-        print("--\t---\t--------\t--------\t----")
+        headers = "ID".ljust(4, " ") + "Age".ljust(9," ") + "Due Date".ljust(15, " ") + "Priority".ljust(10," ") + "Task"
+        print(headers)
+        dividers = "--".ljust(4, " ") + "---".ljust(9," ") + "--------".ljust(15, " ") + "--------".ljust(10," ") + "----"
+        print(dividers)
         for task in self.tasks:
             if task.completed != "-":
                 print(f"{task}")
 
     def __str__(self):
-        print_string = "ID\tAge\tDue Date\tPriority\tTask\tCreated\tCompleted\n"
-        print_string += "--\t---\t--------\t--------\t----\t---------------------------\t-------------------------\n"
+        print_string = "ID".ljust(4, " ") + "Age".ljust(9," ") + "Due Date".ljust(15, " ") + "Priority".ljust(10," ") + "Task".ljust(15, " ") + "Created".ljust(15, " ") + "Completed".ljust(15, " ") + "\n"
+        print_string += "--".ljust(4, " ") + "---".ljust(9," ") + "--------".ljust(15, " ") + "--------".ljust(10," ") + "----".ljust(15, " ") + "----------".ljust(15, " ") + "----------".ljust(15, " ") + "\n"
         for task in self.tasks:
-            print_string += str(task.id) + "\t" + str(task.age.days) + " days \t" + str(task.due) + "\t\t" + str(task.priority) + "\t\t" + str(task.name) + "\t"+ str(task.created) + "\t" + str(task.completed) + "\n"
+            print_string += str(task.id).ljust(4, " ") + str(task.age.days) + " days".ljust(8," ") + str(task.due).ljust(15," ") + str(task.priority).ljust(10," ") + str(task.name).ljust(15," ") + str(task.created).ljust(15," ") + str(task.completed).ljust(15," ") + "\n"
         
         return print_string
 
