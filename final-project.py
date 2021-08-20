@@ -1,3 +1,4 @@
+
 # The user should run the program completely from the command line passing in commands and arguments that will alter the behavior of the program. The commands are --add, --delete, --list, --report, --query, and --done. Use the argparse package to help with parsing the command line arguements.
 
 # Each command will be followed with arguments, as seen in the following examples:
@@ -24,8 +25,22 @@
 # $ python todo.py --add "Cook eggs"
 # Created task 4
 
-def add_task():
-    pass
+import sys
+import tasks_helper
+
+def add_task(args, all_tasks):
+    name = args.add
+    task = tasks_helper.Task(name)
+
+    if args.priority:
+        task.priority = args.priority
+    if args.due:
+        task.due = args.due
+
+    all_tasks.add(task)
+    print(f"Created task {task.id}")
+
+    return
 
 # Task List Command
 # Use the --list command to display a list of the not completed tasks sorted by the due date. If tasks have the same due date, sort by decreasing priority (1 is the highest priority). If tasks have no due date, then sort by decreasing priority.
@@ -43,8 +58,6 @@ def add_task():
 # 3    1d   -           1         Buy eggs
 # 4    30d  -           2         Make eggs
 
-def list_tasks():
-    pass
 
 # Task List Command Using a Query Term
 # Search for tasks that match a search term using the --query command. Only return tasks are not completed in your results.
@@ -69,7 +82,7 @@ def list_tasks():
 # 3    1d   -           2         Buy eggs
 # 4    30d  -           1         Make eggs
 
-def task_query():
+def task_query(args, tasks):
     pass
 
 # Task Done Command
@@ -88,7 +101,7 @@ def task_query():
 # 3    1d   -           2         Buy eggs
 # 4    30d  -           1         Make eggs
 
-def complete_task():
+def complete_task(id):
     pass
 
 # Delete Command
@@ -103,7 +116,7 @@ def complete_task():
 # --   ---  --------   --------   ----
 # 4    30d  -           1         Make eggs
 
-def delete_task():
+def delete_task(args):
     pass
 
 # Task Report Command
@@ -119,9 +132,72 @@ def delete_task():
 # 4    30d  -           1         Make eggs           Tue Mar  6 12:10:08 CST 2018  -
 # Note: This action will be useful for debugging and testing the completed and deleted commands.
 
-def task_report():
+def task_report(tasks):
     pass
 
 # Make your task manager program an executable program. This will allow it to be run from any location on your computer. You will need to place a copy of it in a place where $PATH is looking for executable files. Research to find out where command line applications are typically stored (this will vary betweren Macs, Linus and Windows). You will also need change the running mode of the file (ie. chmod) and add a shebang line. You will also need to change the location of the users .pickle file so that it can be accessed from anywhere. Store it as an invisible file in the users home directory.
 
 # Write the instructions for how you can accomplish this in a README.md file in your repository.
+
+import argparse
+
+# The user should run the program completely from the command line passing in commands and arguments that will alter the behavior of the program. The commands are --add, --delete, --list, --report, --query, and --done. Use the argparse package to help with parsing the command line arguements.
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Command Line Task Manager.')
+
+    parser.add_argument('--add', 
+                        type=str, 
+                        help='Add a task to the task manager')
+    parser.add_argument('--due', 
+                        type=str, 
+                        help='Add a due date to a task')
+    parser.add_argument('--priority', 
+                        type=int, 
+                        help='Add a priority to a task, Options are 1,2,3.')
+
+    parser.add_argument('--delete', 
+                        type=int,
+                        help="Remove a task from the task list.")
+
+    parser.add_argument('--done', 
+                        type=int,
+                        help="Mark a task as complete. Use unique ID as input.")
+
+    parser.add_argument('--list',
+                        action='store_true',
+                        help="List tasks.")
+    parser.add_argument('--report',
+                        help="List tasks.")
+
+    parser.add_argument('--query',
+                        type=str,
+                        required=False,
+                        nargs="+",
+                        help="Search for tasks.")
+
+    # Execute the parse_args() method
+    args = parser.parse_args()
+
+    all_tasks = tasks_helper.Tasks()
+
+    if args.add:
+        add_task(args, all_tasks)
+    elif args.list:
+        all_tasks.list()
+    elif args.delete:
+        all_tasks.delete(args.delete)
+    elif args.query:
+        all_tasks.query(args)
+    elif args.done:
+        complete_task(args.done)
+
+    all_tasks.pickle_tasks()
+
+    # task1 = tasks.Task("help me", 1, "4/17/2018")
+
+    # if not args:
+    #     print('Please include the file you wish to rename after the problem6.py command')
+    #     sys.exit(1)
+
