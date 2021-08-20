@@ -16,7 +16,7 @@ class Task:
     """
     def __init__(self, name, priority=None, due=None):
         self.name = name
-        self.completed = 0
+        self.completed = "-"
         self.created = date.today()
 
         if priority==1 or priority==2 or priority==3:
@@ -62,21 +62,16 @@ class Tasks:
         print("ID\tAge\tDue Date\tPriority\tTask")
         print("--\t---\t--------\t--------\t----")
         for task in self.tasks:
-            if task.completed == 0:
+            if task.completed != "-":
                 print(f"{task}")
 
-# Task Report Command
-# List all tasks, including both completed and incomplete tasks, using the report command. Follow the formatting shown below for the the output. Follow the same reporting order as the --list command.
-
-# $ python todo.py report
-
-# ID   Age  Due Date   Priority   Task                Created                       Completed
-# --   ---  --------   --------   ----                ---------------------------   -------------------------
-# 1    3d   4/17/2018   1         Walk dog            Mon Mar  5 12:10:08 CST 2018  Mon Mar  5 12:10:08 CST 2018
-# 2    10d  3/20/2018   3         Study for finals    Tue Mar  6 12:10:08 CST 2018  Tue Mar  6 12:10:08 CST 2018
-# 3    1d   -           2         Buy eggs            Tue Mar  6 12:10:08 CST 2018  -
-# 4    30d  -           1         Make eggs           Tue Mar  6 12:10:08 CST 2018  -
-# Note: This action will be useful for debugging and testing the completed and deleted commands.
+    def __str__(self):
+        print_string = "ID\tAge\tDue Date\tPriority\tTask\tCreated\tCompleted\n"
+        print_string += "--\t---\t--------\t--------\t----\t---------------------------\t-------------------------\n"
+        for task in self.tasks:
+            print_string += str(task.id) + "\t" + str(task.age.days) + " days \t" + str(task.due) + "\t\t" + str(task.priority) + "\t\t" + str(task.name) + "\t"+ str(task.created) + "\t" + str(task.completed) + "\n"
+        
+        return print_string
 
     def report(self):
         pass
@@ -86,7 +81,7 @@ class Tasks:
         i = 0
         for task in self.tasks:
             if task.id == id:
-                task.completed = 1
+                task.completed = date.today()
                 print(f"Completed Task {id}")
                 break
             i += 1
@@ -94,36 +89,22 @@ class Tasks:
             print(f"Could not find task with id {id}")
         return
 
-# Task List Command Using a Query Term
-# Search for tasks that match a search term using the --query command. Only return tasks are not completed in your results.
-
-# $ python todo.py --query eggs
-
-# ID   Age  Due Date   Priority   Task
-# --   ---  --------   --------   ----
-# 3    1d   -           2         Buy eggs
-# 4    30d  -           1         Make eggs
-
-# Muliple terms should be able to be searched. The argparse package allows you to pass in multiple values for a single argument using nargs='+':
-
-# parser.add_argument('--query', type=str, required=False, nargs="+", help="priority of task; default value is 1")
-# For example:
-
-# $ python todo.py --query eggs dog
-
-# ID   Age  Due Date   Priority   Task
-# --   ---  --------   --------   ----
-# 1    3d   4/17/2018   1         Walk dog
-# 3    1d   -           2         Buy eggs
-# 4    30d  -           1         Make eggs
-
     def query(self, args):
         query_matches = []
         for query in args.query:
             for task in self.tasks:
                 if query in task.name:
                     query_matches.append(task)
-        return query_matches
+
+        if query_matches == []:
+            print("No tasks found.")
+        else:
+            print("ID\tAge\tDue Date\tPriority\tTask")
+            print("--\t---\t--------\t--------\t----")
+            for task in query_matches:
+                if task.completed == 0:
+                    print(f"{task}")
+        return
 
     def delete(self,id):
         """Find task by id and delete it."""

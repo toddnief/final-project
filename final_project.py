@@ -27,6 +27,7 @@ if __name__ == "__main__":
                         action='store_true',
                         help="List tasks.")
     parser.add_argument('--report',
+                        action='store_true',
                         help="List tasks.")
 
     parser.add_argument('--query',
@@ -50,6 +51,8 @@ if __name__ == "__main__":
         all_tasks.query(args)
     elif args.done:
         all_tasks.done(args.done)
+    elif args.report:
+        print(all_tasks)
 
     # Pickle all tasks
     all_tasks.pickle_tasks()
