@@ -1,7 +1,12 @@
-from datetime import date
+from datetime import datetime, timezone
 import pickle
 from dateutil import parser
 from pathlib import Path
+import os
+
+def long_print(datetime):
+    datetime = datetime.strftime("%a %b %-d %X ") + datetime.tzname() + datetime.strftime(" %Y")
+    return datetime
 
 class Task:
     """Representation of a task
@@ -17,7 +22,7 @@ class Task:
     def __init__(self, name, priority=None, due=None):
         self.name = name
         self.completed = "-"
-        self.created = date.today()
+        self.created = datetime.now().astimezone()
 
         if priority==1 or priority==2 or priority==3:
             self.priority = priority
@@ -30,7 +35,7 @@ class Task:
             self.due = "-"
 
     def __str__(self):
-        self.age = date.today() - self.created
+        self.age = datetime.now().astimezone() - self.created
         print_version = str(self.id).ljust(4, " ") + str(self.age.days) + " days".ljust(8," ") + str(self.due).ljust(15, " ") + str(self.priority).ljust(10," ") + str(self.name)
 
         return print_version
@@ -41,12 +46,14 @@ class Tasks:
     def __init__(self):
         """Read pickled tasks file into a list"""
         self.pickle_name = ".todo.pickle"
+        self.home = str(Path.home())
+        self.pickle_file_path = os.path.join(self.home, self.pickle_name)
 
         self.tasks = []
 
         # read pickled tasks. Create pickle file if file not found.
         try:
-            self.tasks = pickle.load( open(self.pickle_name, "rb" ) )
+            self.tasks = pickle.load( open(self.pickle_file_path, "rb" ) )
         except:
             Path(self.pickle_name).touch()
 
@@ -55,7 +62,7 @@ class Tasks:
 
     def pickle_tasks(self):
         """Pickle your task list to a file"""
-        pickle.dump(self.tasks ,open(self.pickle_name,"wb" ))
+        pickle.dump(self.tasks ,open(self.pickle_file_path,"wb" ))
 
     def list(self):
         """Print tasks in columns."""
@@ -64,26 +71,33 @@ class Tasks:
         dividers = "--".ljust(4, " ") + "---".ljust(9," ") + "--------".ljust(15, " ") + "--------".ljust(10," ") + "----"
         print(dividers)
         for task in self.tasks:
-            if task.completed != "-":
+            if task.completed == "-":
                 print(f"{task}")
 
-    def __str__(self):
-        print_string = "ID".ljust(4, " ") + "Age".ljust(9," ") + "Due Date".ljust(15, " ") + "Priority".ljust(10," ") + "Task".ljust(15, " ") + "Created".ljust(15, " ") + "Completed".ljust(15, " ") + "\n"
-        print_string += "--".ljust(4, " ") + "---".ljust(9," ") + "--------".ljust(15, " ") + "--------".ljust(10," ") + "----".ljust(15, " ") + "----------".ljust(15, " ") + "----------".ljust(15, " ") + "\n"
-        for task in self.tasks:
-            print_string += str(task.id).ljust(4, " ") + str(task.age.days) + " days".ljust(8," ") + str(task.due).ljust(15," ") + str(task.priority).ljust(10," ") + str(task.name).ljust(15," ") + str(task.created).ljust(15," ") + str(task.completed).ljust(15," ") + "\n"
-        
-        return print_string
-
     def report(self):
-        pass
+        headers = "ID".ljust(4, " ") + "Age".ljust(9," ") + "Due Date".ljust(15, " ") + "Priority".ljust(10," ") + "Task".ljust(15, " ") + "Created".ljust(30, " ") + "Completed"
+        print(headers)
+
+        dividers = "--".ljust(4, " ") + "---".ljust(9," ") + "--------".ljust(15, " ") + "--------".ljust(10," ") + "----".ljust(15, " ") + "----------".ljust(30, " ") + "----------".ljust(15, " ")
+        print(dividers)
+
+        for task in self.tasks:
+            if task.completed == "-":
+                completed_string = "-"
+            else:
+                completed_string = long_print(task.completed)
+
+            print_string = str(task).ljust(53," ") + long_print(task.created).ljust(30," ") + completed_string.ljust(15," ")
+            print(print_string)
+
+        return
 
     def done(self, id):
         """Find task by id and mark as done."""
         i = 0
         for task in self.tasks:
             if task.id == id:
-                task.completed = date.today()
+                task.completed = datetime.now().astimezone()
                 print(f"Completed Task {id}")
                 break
             i += 1
@@ -117,31 +131,9 @@ class Tasks:
                 print(f"Deleted Task {id}")
                 break
             i += 1
-        if i == len(self.tasks):
+        if i == len(self.tasks) and len(self.tasks) != 0:
             print(f"Could not find task with id {id}")
         return
-
-# Task Add
-# Add a new task by using the --add command. Examples of adding tasks are shown below.
-
-# Note that the task description needs to be enclosed in quotes if there are mulitple words. argparse should provide sufficient error handling for user input, however you need to test that the data matches the type expected.
-
-# The unique identifier is returned when the operation is successful. If the operation is not successful, inform the user and end the program. Remember that the due date is optional. If a priority is not given, then assign it a default value of 1.
-
-# $ python todo.py --add "Walk Dog" --due 4/17/2018 --priority 1
-# Created task 1
-
-# $ python todo.py --add 2 --due 4/17/2018 --priority 1
-# There was an error in creating your task. Run "todo -h" for usage instructions.
-
-# $ python todo.py --add "Study for finals" --due 3/20/2018 --priority 3
-# Created task 2
-
-# $ python todo.py --add "Buy milk and eggs" —due friday --priority 2
-# Created task 3
-
-# $ python todo.py --add "Cook eggs"
-# Created task 4
 
     def add(self, args):
         """Add task to task list. Create task id one larger than current largest task id."""

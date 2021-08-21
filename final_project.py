@@ -1,3 +1,4 @@
+#!/bin/bash
 
 import tasks_helper
 import argparse
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     elif args.done:
         all_tasks.done(args.done)
     elif args.report:
-        print(all_tasks)
+        all_tasks.report()
 
     # Pickle all tasks
     all_tasks.pickle_tasks()
