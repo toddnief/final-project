@@ -108,9 +108,9 @@ class Tasks:
             print(f"Could not find task with id {id}")
         return
 
-    def query(self, args):
+    def query(self, queries):
         query_matches = []
-        for query in args.query:
+        for query in queries:
             for task in self.tasks:
                 if query in task.name:
                     query_matches.append(task)
@@ -118,10 +118,12 @@ class Tasks:
         if query_matches == []:
             print("No tasks found.")
         else:
-            print("ID\tAge\tDue Date\tPriority\tTask")
-            print("--\t---\t--------\t--------\t----")
+            headers = "ID".ljust(4, " ") + "Age".ljust(9," ") + "Due Date".ljust(15, " ") + "Priority".ljust(10," ") + "Task"
+            print(headers)
+            dividers = "--".ljust(4, " ") + "---".ljust(9," ") + "--------".ljust(15, " ") + "--------".ljust(10," ") + "----"
+            print(dividers)
             for task in query_matches:
-                if task.completed == 0:
+                if task.completed == "-":
                     print(f"{task}")
         return
 
