@@ -4,38 +4,40 @@ import tasks_helper
 import argparse
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Command Line Task Manager.')
+    parser = argparse.ArgumentParser(description='Command Line Task Manager')
 
     parser.add_argument('--add', 
                         type=str, 
-                        help='Add a task to the task manager')
+                        help='Add a task to the task manager. Accepts --due and --priority as well.')
     parser.add_argument('--due', 
-                        type=str, 
+                        type=str,
+                        default = None,
                         help='Add a due date to a task')
     parser.add_argument('--priority', 
                         type=int, 
+                        default = None,
                         help='Add a priority to a task, Options are 1,2,3.')
 
     parser.add_argument('--delete', 
                         type=int,
-                        help="Remove a task from the task list.")
+                        help="Remove a task from the task list by Task ID.")
 
     parser.add_argument('--done', 
                         type=int,
-                        help="Mark a task as complete. Use unique ID as input.")
+                        help="Mark a task as complete by Task ID.")
 
     parser.add_argument('--list',
                         action='store_true',
-                        help="List tasks.")
+                        help="List incomplete tasks.")
     parser.add_argument('--report',
                         action='store_true',
-                        help="List tasks.")
+                        help="Print detailed tasks report. Includes completed tasks.")
 
     parser.add_argument('--query',
                         type=str,
                         required=False,
                         nargs="+",
-                        help="Search for tasks.")
+                        help="Search for tasks by input string.")
 
     # Execute the parse_args() method
     args = parser.parse_args()
@@ -43,13 +45,13 @@ if __name__ == "__main__":
     all_tasks = tasks_helper.Tasks()
 
     if args.add:
-        all_tasks.add(args)
+        all_tasks.add(args.add, args.priority, args.due)
     elif args.list:
         all_tasks.list()
     elif args.delete:
         all_tasks.delete(args.delete)
     elif args.query:
-        all_tasks.query(args)
+        all_tasks.query(args.query)
     elif args.done:
         all_tasks.done(args.done)
     elif args.report:

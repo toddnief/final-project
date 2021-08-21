@@ -19,15 +19,18 @@ class Task:
                 - priority - int value of 1, 2, or 3; 1 is default
                 - due date - date, this is optional
     """
-    def __init__(self, name, priority=None, due=None):
+    def __init__(self, name, priority, due):
         self.name = name
         self.completed = "-"
         self.created = datetime.now().astimezone()
 
         if priority==1 or priority==2 or priority==3:
             self.priority = priority
+        elif priority == None:
+            self.priority = 1
         else:
             self.priority = 1
+            print("Priority can only be 1,2, or 3. Priority set to default value of 1.")
 
         if due:
             self.due = parser.parse(due)
@@ -135,17 +138,10 @@ class Tasks:
             print(f"Could not find task with id {id}")
         return
 
-    def add(self, args):
+    def add(self, name, priority, due):
         """Add task to task list. Create task id one larger than current largest task id."""
         # Create task object with task name.
-        name = args.add
-        task = Task(name)
-
-        # Set task value for priority and due date if arguments provided.
-        if args.priority:
-            task.priority = args.priority
-        if args.due:
-            task.due = args.due
+        task = Task(name, priority, due)
 
         # Initialize task IDs at 1. Otherwise increment by 1 from largest current ID.
         if self.tasks == []:
