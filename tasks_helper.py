@@ -26,9 +26,8 @@ class Task:
 
         if priority==1 or priority==2 or priority==3:
             self.priority = priority
-        elif priority == None:
-            self.priority = 1
         else:
+            # Print error message if invalid input for priority and assign default value.
             self.priority = 1
             print("Priority can only be 1,2, or 3. Priority set to default value of 1.")
 

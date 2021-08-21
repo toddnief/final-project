@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/Users/toddnief/opt/anaconda3/bin/python
 
 import tasks_helper
 import argparse
@@ -15,7 +15,7 @@ if __name__ == "__main__":
                         help='Add a due date to a task')
     parser.add_argument('--priority', 
                         type=int, 
-                        default = None,
+                        default = 1,
                         help='Add a priority to a task, Options are 1,2,3.')
 
     parser.add_argument('--delete', 
