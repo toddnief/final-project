@@ -4,9 +4,15 @@ from dateutil import parser
 from pathlib import Path
 import os
 
-def long_print(datetime):
-    datetime = datetime.strftime("%a %b %-d %X ") + datetime.tzname() + datetime.strftime(" %Y")
-    return datetime
+def long_print(print_date):
+    if isinstance(print_date, datetime):
+        print_date = print_date.strftime("%a %b %-d %X ") + print_date.tzname() + print_date.strftime(" %Y")
+    return print_date
+
+def short_print(print_date):
+    if isinstance(print_date, datetime):
+        print_date = print_date.strftime("%b %-d %Y")
+    return print_date
 
 class Task:
     """Representation of a task
@@ -32,13 +38,15 @@ class Task:
             print("Priority can only be 1,2, or 3. Priority set to default value of 1.")
 
         if due:
-            self.due = parser.parse(due)
-        else:
-            self.due = "-"
+            try:
+                self.due = parser.parse(due)
+            except:
+                self.due = "-"
+                print("Unknown due date format. Due date left empty.")
 
     def __str__(self):
         self.age = datetime.now().astimezone() - self.created
-        print_version = str(self.id).ljust(4, " ") + str(self.age.days) + " days".ljust(8," ") + str(self.due).ljust(15, " ") + str(self.priority).ljust(10," ") + str(self.name)
+        print_version = str(self.id).ljust(4, " ") + str(self.age.days) + " days".ljust(8," ") + str(short_print(self.due)).ljust(15, " ") + str(self.priority).ljust(10," ") + str(self.name)
 
         return print_version
 
@@ -77,10 +85,11 @@ class Tasks:
                 print(f"{task}")
 
     def report(self):
-        headers = "ID".ljust(4, " ") + "Age".ljust(9," ") + "Due Date".ljust(15, " ") + "Priority".ljust(10," ") + "Task".ljust(15, " ") + "Created".ljust(30, " ") + "Completed"
+        """Print detailed reports of tasks including date created. Includes completed tasks."""
+        headers = "ID".ljust(4, " ") + "Age".ljust(9," ") + "Due Date".ljust(15, " ") + "Priority".ljust(10," ") + "Task".ljust(25, " ") + "Created".ljust(30, " ") + "Completed"
         print(headers)
 
-        dividers = "--".ljust(4, " ") + "---".ljust(9," ") + "--------".ljust(15, " ") + "--------".ljust(10," ") + "----".ljust(15, " ") + "----------".ljust(30, " ") + "----------".ljust(15, " ")
+        dividers = "--".ljust(4, " ") + "---".ljust(9," ") + "--------".ljust(15, " ") + "--------".ljust(10," ") + "----".ljust(25, " ") + "----------".ljust(30, " ") + "----------".ljust(15, " ")
         print(dividers)
 
         for task in self.tasks:
@@ -89,7 +98,7 @@ class Tasks:
             else:
                 completed_string = long_print(task.completed)
 
-            print_string = str(task).ljust(53," ") + long_print(task.created).ljust(30," ") + completed_string.ljust(15," ")
+            print_string = str(task).ljust(63," ") + long_print(task.created).ljust(30," ") + completed_string.ljust(15," ")
             print(print_string)
 
         return
@@ -111,7 +120,7 @@ class Tasks:
         query_matches = []
         for query in queries:
             for task in self.tasks:
-                if query in task.name:
+                if query.lower() in task.name.lower():
                     query_matches.append(task)
 
         if query_matches == []:

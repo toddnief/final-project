@@ -7,30 +7,37 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Command Line Task Manager')
 
     parser.add_argument('--add', 
-                        type=str, 
+                        type=str,
+                        required=False,
                         help='Add a task to the task manager. Accepts --due and --priority as well.')
     parser.add_argument('--due', 
                         type=str,
+                        required=False,
                         default = None,
                         help='Add a due date to a task')
     parser.add_argument('--priority', 
-                        type=int, 
+                        type=int,
+                        required=False,
                         default = 1,
                         help='Add a priority to a task, Options are 1,2,3.')
 
     parser.add_argument('--delete', 
                         type=int,
+                        required=False,
                         help="Remove a task from the task list by Task ID.")
 
     parser.add_argument('--done', 
                         type=int,
+                        required=False,
                         help="Mark a task as complete by Task ID.")
 
     parser.add_argument('--list',
                         action='store_true',
+                        required=False,
                         help="List incomplete tasks.")
     parser.add_argument('--report',
                         action='store_true',
+                        required=False,
                         help="Print detailed tasks report. Includes completed tasks.")
 
     parser.add_argument('--query',
@@ -59,7 +66,21 @@ if __name__ == "__main__":
 
     # Pickle all tasks
     all_tasks.pickle_tasks()
+    exit()
 
-# Make your task manager program an executable program. This will allow it to be run from any location on your computer. You will need to place a copy of it in a place where $PATH is looking for executable files. Research to find out where command line applications are typically stored (this will vary betweren Macs, Linus and Windows). You will also need change the running mode of the file (ie. chmod) and add a shebang line. You will also need to change the location of the users .pickle file so that it can be accessed from anywhere. Store it as an invisible file in the users home directory.
+# parser = argparse.ArgumentParser(description='Update your ToDo list.')
+# # Add an argument
+# parser.add_argument('--add', type=str, required=False, help='a task string to add to your list')
+# parser.add_argument('--due', type=str, required=False, help='due date in dd/MM/YYYY format')
+# parser.add_argument('--priority', type=int, required=False, default=1, help="priority of task; default value is 1")
+# parser.add_argument('--query', type=str, required=False, nargs="+", help="priority of task; default value is 1")
+# parser.add_argument('--list', action='store_true', required=False, help="list all tasks that have not been completed")
 
-# Write the instructions for how you can accomplish this in a README.md file in your repository.
+# # Parse the argument
+# args = parser.parse_args()
+
+# # Read out arguments (note the types)
+# print("Add:", args.add)
+# print("Due:", args.due)
+# print("Priority:", args.priority)
+# print("List:", args.list)
